@@ -30,7 +30,9 @@ module.exports = {
     },
 
     /**
-     * 对象的深拷贝
+     * 深层拷贝
+     * @param obj 
+     * @returns
      */
     deepCopy: function(obj) {
         var out = [],len = obj.length;

@@ -58,7 +58,7 @@ cc.Class({
         pfb_level: {
             default: null,
             type: cc.Prefab,
-            tooltip: "选择管卡单个pfb"
+            tooltip: "选择关卡单个pfb"
         }
 
     },
@@ -69,12 +69,8 @@ cc.Class({
     },
 
     _initLevelGame(){
-        // this.levelRoads =  LevelData["level"+this.currentLevel][0];
-        // this.levelCarPosition = LevelData["level"+this.currentLevel][1];
-        // 上面的写法有局限，中间不能出现断格关卡配置
-        var levelAllKeys = Object.keys(LevelData);
-        this.levelRoads =  LevelData[ levelAllKeys[this.currentLevel-1] ][0];
-        this.levelCarPosition = Utils.deepCopy( LevelData[ levelAllKeys[this.currentLevel-1] ][1] ) ;
+        this.levelRoads =  LevelData["level"+this.currentLevel][0];
+        this.levelCarPosition = LevelData["level"+this.currentLevel][1];
 
         // 设置层级和关卡
         this.lbl_currentLevel.string = this.currentLevel;
@@ -84,23 +80,14 @@ cc.Class({
 
 
     _selectLevelClick(event){
-        console.log(event.target.levelNum);
-
-        // 点击选择关卡再调用
         this.currentLevel = event.target.levelNum; // 根据选择的关卡设置
-        console.log(Object.keys(LevelData));
         this._initLevelGame();
-        
-        this.layer_level.active = false;
-        this.layer_game.active = true;
-        this.layer_result.active = false;
+        this._initLayerShowOrHidden(false,true,false);
     },
 
     _initSelectLevel(){
-
         var content = cc.find("scv_level/view/content",this.layer_level);
         var passLevel = Utils.getItemFromLocalStorage("passLevel",0);
-
         for (let i = 0; i < Object.keys(LevelData).length; i++) {
             var item = null;
             if ( content.getChildByName("level"+i) ) {
@@ -109,7 +96,6 @@ cc.Class({
                 var item = cc.instantiate(this.pfb_level);
                 content.addChild(item);
             }
-            
             var lbl_level = item.getChildByName("lbl_level").getComponent(cc.Label);
             lbl_level.string = i+1;
             item.levelNum = i+1;
@@ -127,10 +113,14 @@ cc.Class({
 
     },
 
+    _initLayerShowOrHidden(layerLevel,layerGame,layerResult){
+        this.layer_level.active = layerLevel;
+        this.layer_game.active = layerGame;
+        this.layer_result.active = layerResult;
+    },
+
     start () {
-        this.layer_level.active = true;
-        this.layer_game.active = false;
-        this.layer_result.active = false
+        this._initLayerShowOrHidden(true,false,false);
         this._initSelectLevel();
     },
 
@@ -139,7 +129,8 @@ cc.Class({
     },
 
     btnMenu(){
-        cc.log("返回选择关卡界面");
+        this._initLayerShowOrHidden(true,false,false);
+        this._initSelectLevel();
     },
 
     btnResultOk(){
